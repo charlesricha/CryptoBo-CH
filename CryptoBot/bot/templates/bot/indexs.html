@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crypto Chat Bot</title>
+    <!-- Importing Bootsrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'bot/style.css' %}">
+    
+</head>
+<body>
+
+    <section id="home" class="home center">
+        <div class="logo flex center">
+            <img src="{% static 'bot/images/1x/Asset 1.png' %}" alt="bot logo" class="logo-img flex center">
+        </div>
+
+        <div class="content d-flex flex-column center">
+            <h1>Crypto AI</h1>
+            <p class="text-center">Your sassy crypto sidekick - brutally honest advice served with a side of humor!
+                <br>
+                Meet Crypto Snob Bot, your unfiltered guide to the wild world of cryptocurrency. This snarky AI doesn't hold back  serving up savage but accurate market insights with personality to spare. Whether you're asking about Bitcoin's latest moves or just need a laugh at your portfolio's expense, our bot dishes out equal parts wisdom and wit. It's like having a Wall Street trader and a stand-up comedian rolled into one, available 24/7 to roast bad trades and highlight smart moves in language even crypto newbies can understand.
+            </p>
+        </div> 
+        <a href="#chat-section" class="btn center"> Get Started</a>
+        
+    </section>
+
+    <section class=" main flex" id="chat-section">
+        <header class="d-flex gap-2">
+            <div class="logo">
+                <img src="{% static 'bot/images/1x/Asset 1.png' %}" alt="bot logo" class="sm-logo flex center">
+            </div>
+            <h3>Crypto-AI</h3>
+        </header>
+        <div id="chatbox">
+
+        </div>
+
+        <div class="input-box flex">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button onclick="sendMessage()" class="btn">Send</button>
+        </div>
+    </section>  
+      
+    <script>
+        const chatbox = document.getElementById('chatbox');
+        const userInput = document.getElementById('userInput');
+        
+        function addMessage(sender, message) {
+            // chatbox.innerHTML += `<p><strong>${sender}:</strong> ${message}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            if (sender === 'Bot') {
+                const botResponse = document.createElement('p');
+                botResponse.className = 'bot-response-msg';
+                botResponse.innerHTML = `<strong>${sender}:</strong> ${message}`;
+                chatbox.appendChild(botResponse);
+            }
+            else {
+                const userMessage = document.createElement('p');
+                userMessage.className = 'user-request-msg';
+                userMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+                chatbox.appendChild(userMessage);
+            }
+        }
+        
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if(message) {
+                addMessage('You', message);
+                userInput.value = '';
+                
+                fetch(`/chat/?message=${encodeURIComponent(message)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        addMessage('Bot', data.response);
+                    });
+            }
+        }
+        
+        // Allow sending with Enter key
+        userInput.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') sendMessage();
+        });
+        
+        // Initial bot message
+        addMessage('Bot', "Hey there! Ask me about crypto or just say hello!");
+    </script>
+</body>
+<script src="{%static 'bot/script.js'%}"></script>
+
+</html>
